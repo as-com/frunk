@@ -754,6 +754,19 @@ mod std {
                     self.value.into_iter().map(|e| e.transmogrify()).collect()
                 }
             }
+
+            /// Implementation of `Transmogrifier` that maps over a `$container`, transmogrifying the
+            /// elements on the way past.
+            impl<Source, Target, InnerIndices>
+                Transmogrifier<$container<Target>, MappingIndicesWrapper<InnerIndices>>
+                for $container<Source>
+            where
+                Source: Transmogrifier<Target, InnerIndices>,
+            {
+                fn transmogrify(self) -> $container<Target> {
+                    self.into_iter().map(|e| e.transmogrify()).collect()
+                }
+            }
         };
     }
 
@@ -769,7 +782,19 @@ mod std {
         Source: Transmogrifier<Target, InnerIndices>,
     {
         fn transmogrify(self) -> Box<Target> {
-            Box::new(self.value.transmogrify())
+            Box::new((*self.value).transmogrify())
+        }
+    }
+
+    /// Implementation of `Transmogrifier` that maps over an `Box`, transmogrifying the
+    /// contained element on the way past.
+    impl<Source, Target, InnerIndices>
+        Transmogrifier<Box<Target>, MappingIndicesWrapper<InnerIndices>> for Box<Source>
+    where
+        Source: Transmogrifier<Target, InnerIndices>,
+    {
+        fn transmogrify(self) -> Box<Target> {
+            Box::new((*self).transmogrify())
         }
     }
 }
@@ -784,6 +809,19 @@ where
 {
     fn transmogrify(self) -> Option<Target> {
         self.value.map(|e| e.transmogrify())
+    }
+}
+
+/// Implementation of `Transmogrifier` that maps over an `Option`, transmogrifying the
+/// contained element on the way past if present.
+impl<Source, Target, InnerIndices>
+    Transmogrifier<Option<Target>, MappingIndicesWrapper<InnerIndices>>
+    for Option<Source>
+where
+    Source: Transmogrifier<Target, InnerIndices>,
+{
+    fn transmogrify(self) -> Option<Target> {
+        self.map(|e| e.transmogrify())
     }
 }
 
