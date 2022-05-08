@@ -460,7 +460,7 @@ impl<T: fmt::Display> fmt::Debug for DebugAsDisplay<T> {
 /// assert_eq!(l.name, "name");
 /// # }
 /// ```
-pub fn field_with_name<Label, Value>(name: &'static str, value: Value) -> Field<Label, Value> {
+pub const fn field_with_name<Label, Value>(name: &'static str, value: Value) -> Field<Label, Value> {
     Field {
         name_type_holder: PhantomData,
         name,
