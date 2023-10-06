@@ -1,20 +1,15 @@
-extern crate frunk;
-#[macro_use] // for the hlist macro
-extern crate frunk_core;
-extern crate time; //Time library
-
 use frunk::hlist::Sculptor;
 use frunk::labelled::chars::*;
 use frunk::labelled::Field;
 use frunk::labelled::Transmogrifier;
 use frunk::{from_labelled_generic, into_labelled_generic, transform_from};
 use frunk::{Coproduct, HCons, LabelledGeneric};
+use frunk_core::{field, hlist};
+use time::OffsetDateTime;
 
 mod common;
 
 use crate::common::*;
-
-use self::time::*;
 
 #[test]
 fn test_struct_from_labelled_generic() {
@@ -34,6 +29,7 @@ fn test_struct_from_labelled_generic() {
     );
 }
 
+#[allow(clippy::type_complexity)]
 #[test]
 fn test_labelled_generic_names() {
     let u = NewUser {
@@ -147,12 +143,12 @@ fn to_audited<I, O, Indices>(o: I) -> O
 where
     I: LabelledGeneric,
     O: LabelledGeneric,
-    HCons<Field<CreatedAt, Tm>, <I as LabelledGeneric>::Repr>:
+    HCons<Field<CreatedAt, OffsetDateTime>, <I as LabelledGeneric>::Repr>:
         Sculptor<<O as LabelledGeneric>::Repr, Indices>,
 {
     // Add created_at field to LabelledGeneric repr of I
     let i_with_time = HCons {
-        head: field!(CreatedAt, time::now()),
+        head: field!(CreatedAt, OffsetDateTime::now_utc()),
         tail: into_labelled_generic(o),
     };
     // sculpt it to fit Output LabelledGeneric representation
@@ -163,14 +159,14 @@ where
 
 #[test]
 fn test_generalised_auditing() {
-    let now = time::now().tm_nsec;
+    let now = OffsetDateTime::now_utc().nanosecond();
     // Need to help the compiler out by annotating, but no biggie
     let n_u_audited: NormalUserWithAudit = to_audited(NormalUser::build());
 
     // We can even go from NormalUser to JumbledUser since they have compatible LabelledGeneric::Reprs
     let j_u_audited: JumbledUserWithAudit = to_audited(NormalUser::build());
-    assert!(n_u_audited.created_at.tm_nsec >= now);
-    assert!(j_u_audited.created_at.tm_nsec >= now);
+    assert!(n_u_audited.created_at.nanosecond() >= now);
+    assert!(j_u_audited.created_at.nanosecond() >= now);
 }
 
 #[test]

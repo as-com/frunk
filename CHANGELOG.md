@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]:
+- avoid clippy::unneeded_field_pattern (https://github.com/lloydmeta/frunk/pull/216)
+
+## [0.4.2]:
+- Removed `proc-macro-hack` machinery (`proc-macros-impl`) (https://github.com/lloydmeta/frunk/pull/214)
+- Add function for explicitly extending an hlist (https://github.com/lloydmeta/frunk/pull/209)
+
+## [0.4.1]:
+- Documentation fix for `Hcons::sculpt` (https://github.com/lloydmeta/frunk/pull/194)
+- Optimise Semigroup for HashSet and HashMap (https://github.com/lloydmeta/frunk/pull/196)
+- Update to 2021 edition (https://github.com/lloydmeta/frunk/pull/200)
+- Add `extract` to get value out of 1-type coproduct (https://github.com/lloydmeta/frunk/pull/201)
+- Fix needless borrow (https://github.com/lloydmeta/frunk/pull/202)
+- Add `Coproduct::map` (https://github.com/lloydmeta/frunk/pull/204)
 
 ## [0.4.0]:
 - [Breaking change] Rename `Hlist!` type macro to `HList!` (https://github.com/lloydmeta/frunk/issues/132)
